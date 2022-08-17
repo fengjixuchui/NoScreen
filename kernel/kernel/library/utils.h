@@ -166,30 +166,20 @@ uintptr_t find_pattern_page_km(const char* szmodule, const char* szsection, cons
 
 NTSTATUS init_function()
 {	
-	change_window_tree_protection_address = reinterpret_cast<PVOID>(find_pattern_page_km("win32kfull.sys", ".text", 
-		"\xE8\x00\x00\x00\x00\x8B\xF0\x85\xC0\x75\x18", "x????xxxxxx"));
+	auto gre_protect_sprite_content_address = reinterpret_cast<PVOID>(find_pattern_page_km("win32kfull.sys", ".text",
+		"\xE8\x00\x00\x00\x00\x8B\xF8\x85\xC0\x75\x0E", "x????xxxxxx"));
 
-	if (change_window_tree_protection_address == 0)
-		return STATUS_UNSUCCESSFUL;
+	if (gre_protect_sprite_content_address == 0)
+		return STATUS_INVALID_ADDRESS;
 
-	change_window_tree_protection_address = reinterpret_cast<PVOID>(to_rva(reinterpret_cast<uintptr_t>(change_window_tree_protection_address), 1));
+	gre_protect_sprite_content_address = reinterpret_cast<PVOID>(to_rva(reinterpret_cast<uintptr_t>(gre_protect_sprite_content_address), 1));
 
-	return (change_window_tree_protection_address != 0) ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
+	*(PVOID*)&gre_protect_sprite_content = gre_protect_sprite_content_address;
+
+	return STATUS_SUCCESS;
 }
 
-int64_t change_window_tree_protection(pchange_protect_window req)
+NTSTATUS protect_sprite_content_fn(pprotect_sprite_content req)
 {
-	static const auto validate_hwnd = reinterpret_cast<tag_wnd*(*)(uint64_t)>(get_system_base_export("win32kbase.sys", "ValidateHwnd"));
-	if (!validate_hwnd)
-		return 0;
-
-	const auto window_instance = validate_hwnd(req->window_handle);
-	if (!window_instance)
-		return 0;
-
-	static auto change_window_tree_protection = reinterpret_cast<int64_t(NTAPI*)(struct tag_wnd*, uint32_t)>(change_window_tree_protection_address);
-	if (!change_window_tree_protection)
-		return 0;
-
-	return change_window_tree_protection(window_instance, req->value);
+	return gre_protect_sprite_content(0, req->window_handle, 1, req->value) ? STATUS_SUCCESS : STATUS_UNSUCCESSFUL;
 }

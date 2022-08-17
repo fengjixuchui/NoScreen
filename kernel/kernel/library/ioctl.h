@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////
-#define ioctl_change_protect_window (ULONG)CTL_CODE(file_device_mirrore, offset_io_mirrore + 0x0010, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+#define ioctl_protect_sprite_content (ULONG)CTL_CODE(file_device_mirrore, offset_io_mirrore + 0x0010, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 ///////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////
@@ -28,10 +28,10 @@ NTSTATUS ctl_io(PDEVICE_OBJECT device_obj, PIRP irp)
 		const auto ctl_code = stack_location->Parameters.DeviceIoControl.IoControlCode;
 		switch (ctl_code)
 		{
-		case ioctl_change_protect_window:
+		case ioctl_protect_sprite_content:
 		{
-			if (input_buffer_length >= sizeof(change_protect_window) && system_buffer)
-				irp->IoStatus.Status = change_window_tree_protection((pchange_protect_window)system_buffer);
+			if (input_buffer_length >= sizeof(protect_sprite_content) && system_buffer)
+				irp->IoStatus.Status = protect_sprite_content_fn((pprotect_sprite_content)system_buffer);
 			else
 				irp->IoStatus.Status = STATUS_INFO_LENGTH_MISMATCH;
 			break;

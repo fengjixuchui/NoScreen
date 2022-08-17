@@ -58,18 +58,7 @@ typedef struct _KLDR_DATA_TABLE_ENTRY
 	/* 0x009c */ unsigned long TimeDateStamp;
 } KLDR_DATA_TABLE_ENTRY, *PKLDR_DATA_TABLE_ENTRY; /* size: 0x00a0 */
 
-struct tag_thread_info
-{
-	PETHREAD owning_thread;
-};
-
-struct tag_wnd
-{
-	char pad_0[0x10];
-	tag_thread_info* thread_info;
-};
-
-PVOID change_window_tree_protection_address = 0;
+int64_t(*gre_protect_sprite_content)(int64_t, uint64_t, int32_t, char) = nullptr;
 
 extern "C"
 {
@@ -78,8 +67,8 @@ extern "C"
 	NTKERNELAPI NTSTATUS IoCreateDriver(PUNICODE_STRING DriverName, PDRIVER_INITIALIZE InitializationFunction);
 }
 
-typedef struct _change_protect_window
+typedef struct _protect_sprite_content
 {
 	uint32_t value;
 	uint64_t window_handle;
-} change_protect_window, *pchange_protect_window;
+} protect_sprite_content, *pprotect_sprite_content;

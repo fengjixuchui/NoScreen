@@ -16,22 +16,22 @@ int main()
 		error_message("error: driver is not loaded");
 	}
 
-	HWND window_handle = FindWindowW(0, L"Cheat Engine 7.2");
+	HWND window_handle = FindWindowW(0, L"Cheat Engine 7.4");
 
 	if (!window_handle)
 	{
 		error_message("error: target window not found");
 	}
 
-	NTSTATUS status = change_protect_window_ex(window_handle, WDA_EXCLUDEFROMCAPTURE);
+	NTSTATUS status = protect_sprite_content_ex(window_handle, WDA_EXCLUDEFROMCAPTURE);
 
 	if (status == 0)
 	{
-		cout << "success: hide target window" << endl;
+		cout << "success: hide target window from screenshots" << endl;
 	}
 	else
 	{
-		error_message("error: hide target window");
+		error_message("error");
 	}
 
 	cout << endl;

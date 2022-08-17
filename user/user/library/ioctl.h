@@ -15,15 +15,15 @@ NTSTATUS load_status = STATUS_NOT_FOUND;
 ///////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////
-#define ioctl_change_protect_window (ULONG)CTL_CODE(file_device_mirrore, offset_io_mirrore + 0x0010, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+#define ioctl_protect_sprite_content (ULONG)CTL_CODE(file_device_mirrore, offset_io_mirrore + 0x0010, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 ///////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////
-typedef struct _change_protect_window
+typedef struct _protect_sprite_content
 {
 	uint32_t value;
 	uint64_t window_handle;
-} change_protect_window, *pchange_protect_window;
+} protect_sprite_content, *pprotect_sprite_content;
 ///////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////
@@ -45,14 +45,14 @@ NTSTATUS send_service(ULONG ioctl_code, LPVOID io, DWORD size)
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS change_protect_window_ex(HWND window_handle, uint32_t value)
+NTSTATUS protect_sprite_content_ex(HWND window_handle, uint32_t value)
 {
-	change_protect_window req = { 0 };
+	protect_sprite_content req = { 0 };
 
 	req.window_handle = reinterpret_cast<uint64_t>(window_handle);
 	req.value = value;
 
-	return send_service(ioctl_change_protect_window, &req, sizeof(req));
+	return send_service(ioctl_protect_sprite_content, &req, sizeof(req));
 }
 ///////////////////////////////////////////////////////////
 
